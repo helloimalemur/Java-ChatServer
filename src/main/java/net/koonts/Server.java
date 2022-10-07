@@ -1,10 +1,13 @@
 package net.koonts;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.*;
 
 public class Server {
@@ -17,25 +20,25 @@ public class Server {
 //    Queue<String> queue = new Queue<String>() { };
     HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
     SSLSocketFactory sslSocketFactory;
-    public Server() {
+    ServerSocket serverSocket;
+    public Server() throws IOException {
         sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        serverSocket = new ServerSocket();
 
     }
 
-    public void startServer() {
+    public void startServer() throws IOException {
         running = true;
+        System.out.println("Starting server");
         while (running) {
-            System.out.println("Starting server");
-            try (SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket();) {
-                InputStream inputStream = sslSocket.getInputStream();
-                OutputStream outputStream = sslSocket.getOutputStream();
+            System.out.println("Catching client");
+            try (Socket socket = serverSocket.accept()) {
+                InputStream inputStream = socket.getInputStream();
+                OutputStream outputStream = socket.getOutputStream();
                 outputStream.write(1);
                 while (inputStream.available()>0) {
-                    System.out.println(inputStream.read());
+                    inputStream.read();
                 }
-            } catch (Exception e) {
-                running = false;
-                System.out.println(e.getMessage());
             }
             ///clean up
         }
