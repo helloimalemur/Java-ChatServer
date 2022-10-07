@@ -10,10 +10,12 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        Server server = new Server();
-        ClientThread clientThread = new ClientThread();
-        clientThread.start();
+    public static void main(String[] args) {
+        Runnable runnable = () -> {
+            Server server = new Server();
+            server.startServer();
+        };
+        runnable.run();
 
 
 

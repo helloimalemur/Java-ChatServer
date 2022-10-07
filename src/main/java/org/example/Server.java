@@ -17,7 +17,7 @@ public class Server {
 //    Queue<String> queue = new Queue<String>() { };
     HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
     SSLSocketFactory sslSocketFactory;
-    public Server() throws IOException {
+    public Server() {
         sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 
     }
