@@ -1,4 +1,4 @@
-package org.example;
+package net.koonts;
 
 public class ClientThread extends Thread {
     @Override

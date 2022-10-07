@@ -1,4 +1,4 @@
-package org.example;
+package net.koonts;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
