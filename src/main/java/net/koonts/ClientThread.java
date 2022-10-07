@@ -21,15 +21,17 @@ public class ClientThread extends Thread {
     public void run() {
         System.out.println("Client Thread started..");
         while (true) {
-            try {
-            InputStream inputStream = sslSocket.getInputStream();
-            OutputStream outputStream = sslSocket.getOutputStream();
-            outputStream.write(1);
-            while (inputStream.available()>0) {
-                System.out.println(inputStream.read());
-            }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+            if (socket.isBound()) {
+                try {
+                    InputStream inputStream = socket.getInputStream();
+                    OutputStream outputStream = socket.getOutputStream();
+                    outputStream.write(1);
+                    while (inputStream.available()>0) {
+                        System.out.println(inputStream.read());
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
             }
         }
     }

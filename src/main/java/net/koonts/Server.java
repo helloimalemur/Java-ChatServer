@@ -22,8 +22,7 @@ public class Server {
     SSLSocketFactory sslSocketFactory;
     ServerSocket serverSocket;
     public Server() throws IOException {
-        sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-        serverSocket = new ServerSocket();
+        serverSocket = new ServerSocket(8888);
 
     }
 
@@ -31,15 +30,20 @@ public class Server {
         running = true;
         System.out.println("Starting server");
         while (running) {
-            System.out.println("Catching client");
-            try (Socket socket = serverSocket.accept()) {
-                InputStream inputStream = socket.getInputStream();
-                OutputStream outputStream = socket.getOutputStream();
-                outputStream.write(1);
-                while (inputStream.available()>0) {
-                    inputStream.read();
-                }
+            if (true) {
+                System.out.println("Catching client");
+                Socket socket = serverSocket.accept();
+                try {
+
+                    InputStream inputStream = socket.getInputStream();
+                    OutputStream outputStream = socket.getOutputStream();
+                    outputStream.write(1);
+                    while (inputStream.available()>0) {
+                        inputStream.read();
+                    }
+                } catch (Exception e) {}
             }
+
             ///clean up
         }
     }
