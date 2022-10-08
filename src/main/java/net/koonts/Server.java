@@ -73,21 +73,23 @@ public class Server extends Thread {
 
 
                     out.println("Welcome!");
-                    out.println("Please enter nickname: ");
-                    String tmp = in.readLine().split(" ")[0];
+                    out.println("Please enter nickname: ");// first word sent is 'nickname'
+                    String tmp = in.readLine().split(" ")[0];// otherwise address is used
+                    if (tmp.equals("")) {
+                        out.println("Nothing Entered");
+                        nickname = hostAddress;
+                    }
                     if (tmp != null) {
                         nickname = tmp;
                         out.println("Hello " + nickname);
                     }
 
-                    String messageFromClient;
-
-
-                    while ((messageFromClient = in.readLine()) != null) {
-                        if (nickname != null && hostAddress != null && messageFromClient != null) {
-                            System.out.println(hostAddress + ":" + nickname + ":: " + messageFromClient);
+                    String messageFromClient; //begin reading input into chat
+                    while ((messageFromClient = in.readLine()) != null) { //redundant comparators in place to catch excessive
+                        if (nickname != null && hostAddress != null && messageFromClient != null) {//null when client
+                            System.out.println(hostAddress + ":" + nickname + ":: " + messageFromClient);// abruptly disconnects.
                         } else {
-                            if (hostAddress != null && messageFromClient != null) {
+                            if (hostAddress != null && messageFromClient != null) {//
                                 System.out.println(hostAddress + ":: " + messageFromClient);
                             }
                         }
