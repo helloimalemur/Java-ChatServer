@@ -71,17 +71,14 @@ public class Server extends Thread {
                     String messageToClient = "Welcome..";
                     String messageFromClient;
 
-                    out.println(messageToClient);
-//                    out.println("");//client disconnects on zero length string
 
                     while ((messageFromClient = in.readLine()) != null) {
                         System.out.println(messageFromClient);
 
-
-
+                        //if client message begins with "/" process as command
                         if (messageFromClient.startsWith("/")) {
 //                            System.out.println("received modifier..");
-                            runOptions(messageFromClient);
+                            setOption(messageFromClient);
 
                         }
                         broadcast(nickname, messageFromClient);
@@ -95,28 +92,21 @@ public class Server extends Thread {
             }
         }
 
-        private void setNickname(String nickname) {
-            this.nickname = nickname;
-        }
-        private void runOptions(String options) {
+        private void setOption(String options) {
             String[] messageSplit = options.split(" ");
 
             if (messageSplit.length == 2) {
                 if (messageSplit[0].startsWith("/nickname")) {
-                    System.out.println("fire-->");
-                    setNickname(messageSplit[1]);
-
+                    this.nickname = messageSplit[1];
                 }
             }
         }
         private void broadcast(String nickname, String message) {
             for (ConnectionHandler connection : connections) {
+                System.out.println(nickname + ": " + message);
                 connection.out.println("<<BROADCAST>>");
                 connection.out.println(nickname + ": " + message);
                 connection.out.flush();
-            }
-            {
-
             }
         }
     }
