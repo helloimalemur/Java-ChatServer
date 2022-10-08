@@ -5,14 +5,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Client extends Thread{
+
     boolean running = false;
     Socket socket;
     PrintWriter out;
     BufferedReader in;
     String host;
     int port;
+    InputHandler inputHandler;
     Client() {
         this.host = "127.1";
         this.port = 8888;
@@ -22,7 +25,8 @@ public class Client extends Thread{
         this.port = port;
     }
 
-    public static void main(String[] args) {Runnable runnable = () -> {Client client = new Client();client.start();};runnable.run();}
+    public static void main(String[] args) {Runnable runnable = () -> {Client client = new Client("10.150",8888);client.start();};runnable.run();}
+//    public static void main(String[] args) {Runnable runnable = () -> {Client client = new Client();client.start();};runnable.run();}
     @Override
     public void run() {
         running = true;
@@ -32,7 +36,7 @@ public class Client extends Thread{
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
 
-            InputHandler inputHandler = new InputHandler();
+            inputHandler = new InputHandler();
             inputHandler.start();
 
             String messageTo = null;
@@ -52,9 +56,13 @@ public class Client extends Thread{
             out.close();
             in.close();
             socket.close();
+            inputHandler.join();
+
             System.exit(0);
         } catch(IOException e) {
             //TODO: handle exception
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
