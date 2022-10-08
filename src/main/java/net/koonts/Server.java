@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 
-public class Server implements Runnable {
+public class Server extends Thread {
     boolean running = false;
 
     ArrayList<ConnectionHandler> connections = new ArrayList<>();
@@ -65,11 +65,12 @@ public class Server implements Runnable {
                     String messageFromClient;
 
                     out.println(messageToClient);
-                    out.println("");//client disconnects on zero length string
+//                    out.println("");//client disconnects on zero length string
 
                     while ((messageFromClient = in.readLine()) != null) {
                         System.out.println(messageFromClient);
                     }
+                    System.out.println("Client Disconnected");
 
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
