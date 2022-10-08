@@ -99,6 +99,7 @@ public class Server extends Thread {
 
         private void broadcast(String message) {
             for (ConnectionHandler connection : connections) {
+                connection.out.println("<<BROADCAST>>");
                 connection.out.println(message);
                 connection.out.flush();
             }

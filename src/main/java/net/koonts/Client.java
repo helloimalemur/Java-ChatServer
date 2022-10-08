@@ -37,9 +37,9 @@ public class Client extends Thread{
                 System.out.println(in.readLine());
 
 
-//            while ((messageFrom = in.readLine()).length() > 0) {
-//                System.out.println(messageFrom);
-//            }
+            while ((messageFrom = in.readLine()).length() > 0) {
+                System.out.println(messageFrom);
+            }
                 ///out.println("");
 
 
