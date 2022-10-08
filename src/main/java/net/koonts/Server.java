@@ -6,19 +6,22 @@ import java.net.Socket;
 import java.util.*;
 
 public class Server extends Thread {
+    int port;
     boolean running = false;
 
     ArrayList<ConnectionHandler> connections = new ArrayList<>();
-
-    public Server() throws IOException {
-
-
+///
+    public Server() {
+        this.port = 8888;
+    }
+    public Server(int port) {
+        this.port = port;
     }
 
     public void startServer() throws IOException {
         running = true;
         System.out.println("Starting server");
-        ServerSocket serverSocket = new ServerSocket(8888);
+        ServerSocket serverSocket = new ServerSocket(port);
         while (running) {
 
             System.out.println("Ready for client");
@@ -69,6 +72,19 @@ public class Server extends Thread {
 
                     while ((messageFromClient = in.readLine()) != null) {
                         System.out.println(messageFromClient);
+                        if (messageFromClient.startsWith("/")) {
+//                            System.out.println("received modifier..");
+                            String[] messageSplit = messageFromClient.split(" ");
+
+                            if (messageSplit.length == 2) {
+                                if (messageSplit[0].startsWith("/nickname")) {
+                                    System.out.println("fire-->");
+                                    //set nickname and broadcast
+
+                                }
+                            }
+                        }
+
                     }
                     System.out.println("Client Disconnected");
 
