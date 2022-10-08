@@ -144,5 +144,5 @@ public class Server extends Thread {
             }
         }
     }
-    public static void main(String[] args) {Runnable runnable = () -> {Server server = new Server(8888);server.start();};runnable.run();}
+    public static void main(String[] args) {Runnable runnable = () -> {Server server = new Server();server.start();};runnable.run();}
 }
