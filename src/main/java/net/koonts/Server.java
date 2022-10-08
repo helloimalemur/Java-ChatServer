@@ -50,12 +50,14 @@ public class Server extends Thread {
     }
 
     class ConnectionHandler extends Thread {
+        String nickname;
         PrintWriter out;
         BufferedReader in;
 
         Socket client;
         ConnectionHandler(Socket client) throws IOException {
             this.client = client;
+            this.nickname = client.getInetAddress().getHostAddress();
         }
         @Override
         public void run() {
@@ -86,7 +88,7 @@ public class Server extends Thread {
                                 }
                             }
                         }
-                        broadcast(messageFromClient);
+                        broadcast(nickname, messageFromClient);
 
                     }
                     System.out.println("Client Disconnected");
@@ -97,10 +99,10 @@ public class Server extends Thread {
             }
         }
 
-        private void broadcast(String message) {
+        private void broadcast(String nickname, String message) {
             for (ConnectionHandler connection : connections) {
                 connection.out.println("<<BROADCAST>>");
-                connection.out.println(message);
+                connection.out.println(nickname + ": " + message);
                 connection.out.flush();
             }
             {
