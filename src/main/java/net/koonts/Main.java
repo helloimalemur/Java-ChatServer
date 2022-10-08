@@ -13,15 +13,13 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
         Server server = new Server(8888);
         server.start();
-        Thread.sleep(4000);
-
-        for (int i=0;i<1;i++) {
-            new Client("127.1", 8888).start();
-        }
 
 
-
-        Thread.sleep(6000);
-        System.exit(0);
+//        Thread.sleep(4000);
+//        for (int i=0;i<1;i++) {
+//            new Client("127.1", 8888).start();
+//        }
+//        Thread.sleep(6000);
+//        System.exit(0);
     }
 }
