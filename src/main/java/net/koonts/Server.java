@@ -82,11 +82,11 @@ public class Server extends Thread {
                                 if (messageSplit[0].startsWith("/nickname")) {
                                     System.out.println("fire-->");
                                     //set nickname and broadcast
-                                    broadcast(messageFromClient);
 
                                 }
                             }
                         }
+                        broadcast(messageFromClient);
 
                     }
                     System.out.println("Client Disconnected");
