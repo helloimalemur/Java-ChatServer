@@ -51,13 +51,15 @@ public class Server extends Thread {
 
     class ConnectionHandler extends Thread {
         String nickname;
+        String hostAddress;
         PrintWriter out;
         BufferedReader in;
 
         Socket client;
         ConnectionHandler(Socket client) throws IOException {
             this.client = client;
-            this.nickname = client.getInetAddress().getHostAddress();
+            this.hostAddress = client.getInetAddress().getHostAddress();
+//            this.nickname = hostAddress;
         }
         @Override
         public void run() {
@@ -68,20 +70,26 @@ public class Server extends Thread {
                     out = new PrintWriter(client.getOutputStream(), true);
                     in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-                    String messageToClient = "Welcome..";
+
+                    out.println("Welcome!");
                     String messageFromClient;
 
 
                     while ((messageFromClient = in.readLine()) != null) {
-                        System.out.println(messageFromClient);
+                        if (nickname != null) {
+                            System.out.println(hostAddress + ":" + nickname + ":: " + messageFromClient);
+                        } else {
+                            System.out.println(hostAddress + ":: " + messageFromClient);
+                        }
 
                         //if client message begins with "/" process as command
                         if (messageFromClient.startsWith("/")) {
 //                            System.out.println("received modifier..");
                             setOption(messageFromClient);
 
+                        } else {
+                            broadcast(nickname, messageFromClient);
                         }
-                        broadcast(nickname, messageFromClient);
 
                     }
                     System.out.println("Client Disconnected");
@@ -103,9 +111,13 @@ public class Server extends Thread {
         }
         private void broadcast(String nickname, String message) {
             for (ConnectionHandler connection : connections) {
-                System.out.println(nickname + ": " + message);
+//                System.out.println(nickname + ": " + message);
                 connection.out.println("<<BROADCAST>>");
-                connection.out.println(nickname + ": " + message);
+                if (nickname != null) {
+                    connection.out.println(nickname + ": " + message);
+                } else {
+                    connection.out.println(hostAddress + ": " + message);
+                }
                 connection.out.flush();
             }
         }
