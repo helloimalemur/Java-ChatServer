@@ -52,17 +52,16 @@ public class Client extends Thread{
 
     private void shutdown() {
         try {
-//            out.flush();
+            running = false;
 //            out.close();
 //            in.close();
             socket.close();
-            inputHandler.join();
+            inputHandler.interrupt();
 
             System.exit(0);
         } catch(IOException e) {
             //TODO: handle exception
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+
         }
     }
 
@@ -79,14 +78,21 @@ public class Client extends Thread{
                 while (running) {
                     String message = inReader.readLine();
                     if (message.startsWith("/quit")) {
-                        inReader.close();
+//                        inReader.close();
                         shutdown();
                     }
                     out.println(message);
                     out.flush();
                 }
             } catch(IOException e) {
+                shutdown();
             }
+        }
+
+        @Override
+        public void interrupt() {
+            running = false;
+
         }
     }
 }
