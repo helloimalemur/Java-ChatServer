@@ -30,6 +30,7 @@ public class Server implements Runnable {
                 connections.add(ch);
                 ch.start();
 
+
             } catch (Exception e) {}
             ///
 
@@ -64,8 +65,7 @@ public class Server implements Runnable {
                     String messageFromClient;
 
                     out.println(messageToClient);
-                    out.flush();
-
+                    out.println("");//client disconnects on zero length string
 
                     while ((messageFromClient = in.readLine()) != null) {
                         System.out.println(messageFromClient);
