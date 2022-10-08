@@ -51,7 +51,7 @@ public class Server extends Thread {
 
     class ConnectionHandler extends Thread {
 
-        String nickname;
+        public String nickname;
         String hostAddress;
         PrintWriter out;
         BufferedReader in;
@@ -60,7 +60,6 @@ public class Server extends Thread {
         ConnectionHandler(Socket client) throws IOException {
             this.client = client;
             this.hostAddress = client.getInetAddress().getHostAddress();
-//            this.nickname = hostAddress;
         }
         @Override
         public void run() {
@@ -75,14 +74,12 @@ public class Server extends Thread {
                     out.println("Welcome!");
                     out.println("Please enter nickname: ");// first word sent is 'nickname'
                     String tmp = in.readLine().split(" ")[0];// otherwise address is used
+                    nickname = tmp;
                     if (tmp.equals("")) {
                         out.println("Nothing Entered");
                         nickname = hostAddress;
                     }
-                    if (tmp != null) {
-                        nickname = tmp;
-                        out.println("Hello " + nickname);
-                    }
+                    out.println("Hello " + nickname);
 
                     String messageFromClient; //begin reading input into chat
                     while ((messageFromClient = in.readLine()) != null) { //redundant comparators in place to catch excessive
