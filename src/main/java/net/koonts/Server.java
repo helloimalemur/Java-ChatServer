@@ -88,11 +88,21 @@ public class Server extends Thread {
                             setOption(messageFromClient);
 
                         } else {
-                            broadcast(nickname, messageFromClient);
+                            if (nickname != null) {
+                                broadcast(nickname + ": " + messageFromClient);
+                            } else {
+                                broadcast(hostAddress + ": " + messageFromClient);
+                            }
                         }
 
                     }
-                    System.out.println("Client Disconnected");
+
+                    //report disconnection to server log
+                    if (nickname != null) {
+                        System.out.println(hostAddress + " : " + nickname + " <<Disconnected>>");
+                    } else {
+                        System.out.println(hostAddress + " : " + " <<Disconnected>>");
+                    }
 
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -106,18 +116,21 @@ public class Server extends Thread {
             if (messageSplit.length == 2) {
                 if (messageSplit[0].startsWith("/nickname")) {
                     this.nickname = messageSplit[1];
+                    broadcast(hostAddress + " has changed nickname to: " + nickname);
                 }
             }
         }
-        private void broadcast(String nickname, String message) {
+        private void broadcast(String message) {
             for (ConnectionHandler connection : connections) {
 //                System.out.println(nickname + ": " + message);
-                connection.out.println("<<BROADCAST>>");
-                if (nickname != null) {
-                    connection.out.println(nickname + ": " + message);
-                } else {
-                    connection.out.println(hostAddress + ": " + message);
-                }
+//                connection.out.println("<<BROADCAST>>");
+                connection.out.println(message);
+//                if (nickname != null) {
+////                    connection.out.println(hostAddress + " : " + nickname + ": " + message);
+//                    connection.out.println(nickname + ": " + message);
+//                } else {
+//                    connection.out.println(hostAddress + ": " + message);
+//                }
                 connection.out.flush();
             }
         }
