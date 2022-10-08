@@ -84,10 +84,12 @@ public class Server extends Thread {
 
 
                     while ((messageFromClient = in.readLine()) != null) {
-                        if (nickname != null) {
+                        if (nickname != null && hostAddress != null && messageFromClient != null) {
                             System.out.println(hostAddress + ":" + nickname + ":: " + messageFromClient);
                         } else {
-                            System.out.println(hostAddress + ":: " + messageFromClient);
+                            if (hostAddress != null && messageFromClient != null) {
+                                System.out.println(hostAddress + ":: " + messageFromClient);
+                            }
                         }
 
                         //if client message begins with "/" process as command
@@ -102,7 +104,6 @@ public class Server extends Thread {
                                 broadcast(hostAddress + ": " + messageFromClient);
                             }
                         }
-
                     }
 
                     //report disconnection to server log
