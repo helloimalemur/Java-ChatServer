@@ -39,10 +39,11 @@ public class Client extends Thread{
             inputHandler.start();
 
             String messageTo;
-            String messageFrom;
+            String messageFrom = in.readLine();
+            System.out.println(messageFrom);//Welcome message does not get '>'
 
             while ((messageFrom = in.readLine()).length() > 0) {
-                System.out.println(messageFrom);
+                System.out.println(messageFrom); //nickname prompt does not get '>'
                 System.out.print(">");
             }
         } catch (IOException e) {
