@@ -7,11 +7,8 @@ import java.util.*;
 
 public class Server extends Thread {
     int port;
-
     boolean running = false;
     ArrayList<ConnectionHandler> connections = new ArrayList<>();
-
-    ///
     public Server() {
         this.port = 8888;
     }
@@ -23,20 +20,17 @@ public class Server extends Thread {
         System.out.println("Starting server");
         ServerSocket serverSocket = new ServerSocket(port);
         while (running) {
-
-            System.out.println("Ready for client");
             try {
-
+                //handle client connection
+                //add ConnectionHandler ch to connections ArrayList<>
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Connecting to client: " + clientSocket.getInetAddress().getHostAddress());
+                System.out.println("client connected: " + clientSocket.getInetAddress().getHostAddress());
                 ConnectionHandler ch = new ConnectionHandler(clientSocket);
                 connections.add(ch);
                 ch.start();
-
-
-            } catch (Exception e) {}
-            ///
-
+            } catch (Exception e) {
+                //TODO: handle this
+            }
         }
     }
 
@@ -121,24 +115,29 @@ public class Server extends Thread {
             }
         }
         private void setOption(String options) {
+            //user entered string beginning with '/'
             String[] messageSplit = options.split(" ");
-
-            if (messageSplit.length == 2) {
+            if (messageSplit.length>0) {
                 ///set nickname
                 if (messageSplit[0].startsWith("/nickname")) {
                     this.nickname = messageSplit[1];
                     broadcast(hostAddress + " has changed nickname to: " + nickname);
                 }
-                //display help
-                if (messageSplit[0].startsWith("/help")) {
-                    this.nickname = messageSplit[1];
+                //display help message
+                if (options.startsWith("/help")) {
                     String helpMessage = "/help for this, /nickname to change nickname, /quit to exit";
+//                    out.println(helpMessage);
                     broadcast(helpMessage);
+                }
+                if (options.startsWith("/killserver")) {
+                    System.exit(0);
                 }
             }
         }
 
         private void broadcast(String message) {
+            //loop over connections ArrayList<ConnectionHandler>
+            //to broadcast socket message
             for (ConnectionHandler connection : connections) {
                 connection.out.println(message);
             }
