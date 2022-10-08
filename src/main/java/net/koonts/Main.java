@@ -12,12 +12,13 @@ import java.net.UnknownHostException;
 public class Main {
     public static void main(String[] args) {
         Runnable runnable = () -> {
+            Server server = null;
             try {
-                Server server = new Server();
-                server.startServer();
+                server = new Server();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            server.run();
         };
         runnable.run();
     }

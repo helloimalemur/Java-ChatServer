@@ -1,50 +1,80 @@
 package net.koonts;
 
-import javax.net.SocketFactory;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 
-public class Server {
+public class Server implements Runnable {
     boolean running = false;
 
-    ArrayList<String> hosts = new ArrayList<>();
-    ArrayList<Integer> ports = new ArrayList<>();
-    Vector<Integer> vector = new Vector<>();
-    LinkedList<Integer> linkedList = new LinkedList<>();
-//    Queue<String> queue = new Queue<String>() { };
-    HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
-    SSLSocketFactory sslSocketFactory;
-    ServerSocket serverSocket;
+    ArrayList<ConnectionHandler> connections = new ArrayList<>();
+
     public Server() throws IOException {
-        serverSocket = new ServerSocket(8888);
+
 
     }
 
     public void startServer() throws IOException {
         running = true;
         System.out.println("Starting server");
+        ServerSocket serverSocket = new ServerSocket(8888);
         while (running) {
-            if (true) {
-                System.out.println("Catching client");
-                Socket socket = serverSocket.accept();
+
+            System.out.println("Ready for client");
+            try {
+
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Connecting to client: " + clientSocket.getInetAddress().getHostAddress());
+                ConnectionHandler ch = new ConnectionHandler(clientSocket);
+                connections.add(ch);
+                ch.start();
+
+            } catch (Exception e) {}
+            ///
+
+        }
+    }
+
+    @Override
+    public void run() {
+        try {
+            startServer();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    class ConnectionHandler extends Thread {
+
+        Socket client;
+        ConnectionHandler(Socket client) throws IOException {
+            this.client = client;
+        }
+        @Override
+        public void run() {
+            System.out.println("Client Thread started..");
+
+            if (client.isConnected()) {
                 try {
+                    PrintWriter out = new PrintWriter(client.getOutputStream(), true);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-                    InputStream inputStream = socket.getInputStream();
-                    OutputStream outputStream = socket.getOutputStream();
-                    outputStream.write(1);
-                    while (inputStream.available()>0) {
-                        inputStream.read();
+                    String messageToClient = "Welcome..";
+                    String messageFromClient;
+
+                    out.println(messageToClient);
+                    out.flush();
+
+
+                    while ((messageFromClient = in.readLine()) != null) {
+                        System.out.println(messageFromClient);
                     }
-                } catch (Exception e) {}
-            }
 
-            ///clean up
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
         }
     }
 }
