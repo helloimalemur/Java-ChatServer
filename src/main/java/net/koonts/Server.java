@@ -50,6 +50,8 @@ public class Server extends Thread {
     }
 
     class ConnectionHandler extends Thread {
+        PrintWriter out;
+        BufferedReader in;
 
         Socket client;
         ConnectionHandler(Socket client) throws IOException {
@@ -61,8 +63,8 @@ public class Server extends Thread {
 
             if (client.isConnected()) {
                 try {
-                    PrintWriter out = new PrintWriter(client.getOutputStream(), true);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                    out = new PrintWriter(client.getOutputStream(), true);
+                    in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
                     String messageToClient = "Welcome..";
                     String messageFromClient;
@@ -80,6 +82,7 @@ public class Server extends Thread {
                                 if (messageSplit[0].startsWith("/nickname")) {
                                     System.out.println("fire-->");
                                     //set nickname and broadcast
+                                    broadcast(messageFromClient);
 
                                 }
                             }
@@ -91,6 +94,16 @@ public class Server extends Thread {
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
+            }
+        }
+
+        private void broadcast(String message) {
+            for (ConnectionHandler connection : connections) {
+                connection.out.println(message);
+                connection.out.flush();
+            }
+            {
+
             }
         }
     }
