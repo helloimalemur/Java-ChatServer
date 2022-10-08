@@ -25,8 +25,7 @@ public class Client extends Thread{
         this.port = port;
     }
 
-    public static void main(String[] args) {Runnable runnable = () -> {Client client = new Client("10.150",8888);client.start();};runnable.run();}
-//    public static void main(String[] args) {Runnable runnable = () -> {Client client = new Client();client.start();};runnable.run();}
+//    public static void main(String[] args) {Runnable runnable = () -> {Client client = new Client("10.150",8888);client.start();};runnable.run();}
     @Override
     public void run() {
         running = true;
@@ -49,7 +48,6 @@ public class Client extends Thread{
             throw new RuntimeException(e);
         }
     }
-
     private void shutdown() {
         try {
             running = false;
@@ -66,20 +64,22 @@ public class Client extends Thread{
     }
 
     class InputHandler extends Thread {
+
         InputHandler() {
 
 
         }
-
         @Override
         public void run() {
             try {
                 BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
                 while (running) {
                     String message = inReader.readLine();
-                    if (message.startsWith("/quit")) {
-//                        inReader.close();
-                        shutdown();
+                    if (message != null) {
+                        if (message.startsWith("/quit")) {
+//                        inReader.close();////
+                            shutdown();
+                        }
                     }
                     out.println(message);
                     out.flush();
@@ -94,5 +94,7 @@ public class Client extends Thread{
             running = false;
 
         }
+
     }
+    public static void main(String[] args) {Runnable runnable = () -> {Client client = new Client();client.start();};runnable.run();}
 }

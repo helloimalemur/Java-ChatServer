@@ -7,17 +7,17 @@ import java.util.*;
 
 public class Server extends Thread {
     int port;
-    boolean running = false;
 
+    boolean running = false;
     ArrayList<ConnectionHandler> connections = new ArrayList<>();
-///
+
+    ///
     public Server() {
         this.port = 8888;
     }
     public Server(int port) {
         this.port = port;
     }
-
     public void startServer() throws IOException {
         running = true;
         System.out.println("Starting server");
@@ -50,12 +50,13 @@ public class Server extends Thread {
     }
 
     class ConnectionHandler extends Thread {
+
         String nickname;
         String hostAddress;
         PrintWriter out;
         BufferedReader in;
-
         Socket client;
+
         ConnectionHandler(Socket client) throws IOException {
             this.client = client;
             this.hostAddress = client.getInetAddress().getHostAddress();
@@ -109,7 +110,6 @@ public class Server extends Thread {
                 }
             }
         }
-
         private void setOption(String options) {
             String[] messageSplit = options.split(" ");
 
@@ -120,6 +120,7 @@ public class Server extends Thread {
                 }
             }
         }
+
         private void broadcast(String message) {
             for (ConnectionHandler connection : connections) {
 //                System.out.println(nickname + ": " + message);
@@ -135,4 +136,5 @@ public class Server extends Thread {
             }
         }
     }
+    public static void main(String[] args) {Runnable runnable = () -> {Server server = new Server(8888);server.start();};runnable.run();}
 }
