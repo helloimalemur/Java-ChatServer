@@ -83,10 +83,10 @@ public class Server extends Thread {
 
                     String messageFromClient; //begin reading input into chat
                     while ((messageFromClient = in.readLine()) != null) { //redundant comparators in place to catch excessive
-                        if (nickname != null && hostAddress != null && messageFromClient != null) {//null when client
+                        if (nickname != null && hostAddress != null && messageFromClient.length() != 0) {//null when client
                             System.out.println(hostAddress + ":" + nickname + ":: " + messageFromClient);// abruptly disconnects.
                         } else {
-                            if (hostAddress != null && messageFromClient != null) {//
+                            if (hostAddress != null && messageFromClient.length() != 0) {//
                                 System.out.println(hostAddress + ":: " + messageFromClient);
                             }
                         }
@@ -96,12 +96,15 @@ public class Server extends Thread {
 //                            System.out.println("received modifier..");
                             setOption(messageFromClient);
 
-                        } else {
+                        } else if(messageFromClient.length() != 0) {
                             if (nickname != null) {
                                 broadcast(nickname + ": " + messageFromClient);
                             } else {
                                 broadcast(hostAddress + ": " + messageFromClient);
                             }
+
+                        } else {
+                            out.println("Please enter a message..");
                         }
                     }
 
@@ -121,9 +124,16 @@ public class Server extends Thread {
             String[] messageSplit = options.split(" ");
 
             if (messageSplit.length == 2) {
+                ///set nickname
                 if (messageSplit[0].startsWith("/nickname")) {
                     this.nickname = messageSplit[1];
                     broadcast(hostAddress + " has changed nickname to: " + nickname);
+                }
+                //display help
+                if (messageSplit[0].startsWith("/help")) {
+                    this.nickname = messageSplit[1];
+                    String helpMessage = "/help for this, /nickname to change nickname, /quit to exit";
+                    broadcast(helpMessage);
                 }
             }
         }

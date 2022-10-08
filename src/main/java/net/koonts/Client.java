@@ -43,6 +43,7 @@ public class Client extends Thread{
 
             while ((messageFrom = in.readLine()).length() > 0) {
                 System.out.println(messageFrom);
+                System.out.print(">");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
