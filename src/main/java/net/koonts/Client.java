@@ -52,9 +52,9 @@ public class Client extends Thread{
 
     private void shutdown() {
         try {
-            out.flush();
-            out.close();
-            in.close();
+//            out.flush();
+//            out.close();
+//            in.close();
             socket.close();
             inputHandler.join();
 
@@ -82,6 +82,8 @@ public class Client extends Thread{
                         inReader.close();
                         shutdown();
                     }
+                    out.println(message);
+                    out.flush();
                 }
             } catch(IOException e) {
             }
