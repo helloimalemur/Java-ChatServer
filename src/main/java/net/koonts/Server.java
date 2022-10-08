@@ -72,7 +72,7 @@ public class Server extends Thread {
 
 
                     out.println("Welcome!");
-                    out.println("Please enter nickname: ");// first word sent is 'nickname'
+                    out.println("Please enter nickname:");// first word sent is 'nickname'
                     String tmp = in.readLine().split(" ")[0];// otherwise address is used
                     nickname = tmp;
                     if (tmp.equals("")) {
@@ -140,16 +140,7 @@ public class Server extends Thread {
 
         private void broadcast(String message) {
             for (ConnectionHandler connection : connections) {
-//                System.out.println(nickname + ": " + message);
-//                connection.out.println("<<BROADCAST>>");
                 connection.out.println(message);
-//                if (nickname != null) {
-////                    connection.out.println(hostAddress + " : " + nickname + ": " + message);
-//                    connection.out.println(nickname + ": " + message);
-//                } else {
-//                    connection.out.println(hostAddress + ": " + message);
-//                }
-                connection.out.flush();
             }
         }
     }

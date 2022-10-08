@@ -38,8 +38,8 @@ public class Client extends Thread{
             inputHandler = new InputHandler();
             inputHandler.start();
 
-            String messageTo = null;
-            String messageFrom = null;
+            String messageTo;
+            String messageFrom;
 
             while ((messageFrom = in.readLine()).length() > 0) {
                 System.out.println(messageFrom);
