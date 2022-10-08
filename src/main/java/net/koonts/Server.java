@@ -73,6 +73,13 @@ public class Server extends Thread {
 
 
                     out.println("Welcome!");
+                    out.println("Please enter nickname: ");
+                    String tmp = in.readLine().split(" ")[0];
+                    if (tmp != null) {
+                        nickname = tmp;
+                        out.println("Hello " + nickname);
+                    }
+
                     String messageFromClient;
 
 
