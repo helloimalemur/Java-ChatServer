@@ -14,7 +14,11 @@ public class Main {
         Server server = new Server();
         server.start();
         Thread.sleep(4000);
-        Client client = new Client();
-        client.start();
+
+        for (int i=0;i<10;i++) {
+            new Client().start();
+        }
+
+
     }
 }
