@@ -114,7 +114,7 @@ public class Server extends Thread {
                 }
             }
         }
-        private void setOption(String options) {
+        private void setOption(String options) throws InterruptedException {
             //user entered string beginning with '/'
             String[] messageSplit = options.split(" ");
             if (messageSplit.length>0) {
@@ -130,6 +130,7 @@ public class Server extends Thread {
                     broadcast(helpMessage);
                 }
                 if (options.startsWith("/killserver")) {
+                    Thread.sleep(3000);
                     System.exit(0);
                 }
             }

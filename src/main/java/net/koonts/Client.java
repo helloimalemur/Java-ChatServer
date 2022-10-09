@@ -79,7 +79,12 @@ public class Client extends Thread{
                     String message = inReader.readLine();
                     if (message != null) {
                         if (message.startsWith("/quit")) {
-//                        inReader.close();////
+                            inReader.close();
+                            shutdown();
+                        }
+                        if (message.startsWith("/killserver")) {
+                            out.println(message);
+                            inReader.close();
                             shutdown();
                         }
                     }
