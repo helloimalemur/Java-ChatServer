@@ -13,8 +13,12 @@ public class Main {
     public static void main(String[] args) {
         if (args.length>0) {
             switch (args[0]) {
-                case "client" -> client();
-                default -> server();
+                case "client":
+                    client();
+                    break;
+                default:
+                    server();
+                    break;
             }
         } else {server();}
     }

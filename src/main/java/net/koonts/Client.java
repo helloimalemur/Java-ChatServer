@@ -17,7 +17,7 @@ public class Client extends Thread{
     int port;
     InputHandler inputHandler;
     Client() {
-        this.host = "127.1";
+        this.host = "10.150";
         this.port = 8888;
     }
     Client(String host, int port) {
