@@ -19,4 +19,6 @@ test {
     useJUnitPlatform()
 }
 
-mainClassName = 'net.koonts.Main';
+application {
+    mainClassName = 'net.koonts.Main';
+}
