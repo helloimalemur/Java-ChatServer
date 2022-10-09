@@ -1,5 +1,7 @@
 package net.koonts;
 
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -55,12 +57,24 @@ public class Server extends Thread {
             this.client = client;
             this.hostAddress = client.getInetAddress().getHostAddress();
         }
+        public SSLSocket moveToSSL(Socket client) {
+            SSLSocket sslClient = null;
+            try {
+                SSLSocketFactory sslf = (SSLSocketFactory) SSLSocketFactory.getDefault();
+                sslClient = (SSLSocket) sslf.createSocket(client, null, client.getPort(), false);
+                
+            } catch (IOException e) {
+                //TODO: catch
+            }
+            return sslClient;
+        }
         @Override
         public void run() {
             System.out.println("Client Thread started..");
 
             if (client.isConnected()) {
                 try {
+                    client = moveToSSL(client);
                     out = new PrintWriter(client.getOutputStream(), true);
                     in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
