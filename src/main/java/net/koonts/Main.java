@@ -10,8 +10,22 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Main {
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) {
+        if (args.length>0) {
+            switch (args[0]) {
+                case "server" -> server();
+                case "client" -> client();
+                default -> server();
+            }
+        } else {server();}
+    }
+
+    static void server() {
         Server server = new Server(8888);
         server.start();
+    }
+    static void client() {
+        Client client = new Client();
+        client.start();
     }
 }
