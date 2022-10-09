@@ -13,7 +13,6 @@ public class Main {
     public static void main(String[] args) {
         if (args.length>0) {
             switch (args[0]) {
-                case "server" -> server();
                 case "client" -> client();
                 default -> server();
             }
