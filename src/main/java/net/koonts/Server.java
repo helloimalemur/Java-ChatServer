@@ -1,3 +1,4 @@
+//SSL: https://stackoverflow.com/questions/25637039/detecting-ssl-connection-and-converting-socket-to-sslsocket
 package net.koonts;
 
 import javax.net.ssl.SSLSocket;
@@ -74,7 +75,7 @@ public class Server extends Thread {
 
             if (client.isConnected()) {
                 try {
-                    client = moveToSSL(client);
+                    client = moveToSSL(client);/////////
                     out = new PrintWriter(client.getOutputStream(), true);
                     in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
