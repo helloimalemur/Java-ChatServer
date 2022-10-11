@@ -24,6 +24,18 @@ public class Client extends Thread{
     InputHandler inputHandler;
     SSLSocketFactory sslSocketFactory;
     SSLSocket sslSocket;
+
+    private static final int SERVER_PORT = 8888;
+    private static final String TLS_VERSION = "TLSv1.2";
+    private static final int SERVER_COUNT = 1;
+    private static final String SERVER_HOST_NAME = "127.0.0.1";
+    private static final String TRUST_STORE_NAME = "servercert.p12";
+    private static final char[] TRUST_STORE_PWD = new char[] {'a', 'b', 'c', '1',
+            '2', '3'};
+    private static final String KEY_STORE_NAME = "servercert.p12";
+    private static final char[] KEY_STORE_PWD = new char[] {'a', 'b', 'c', '1',
+            '2', '3'};
+
     public Client() {
         this.host = "10.150";
         this.port = 8888;

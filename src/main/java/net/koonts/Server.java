@@ -19,9 +19,18 @@ public class Server extends Thread {
     SSLSocket sslClient = null;
     ArrayList<ConnectionHandler> connections = new ArrayList<>();
 
-    //SSL config
-    String trustStoreName = "";
+    private static final int SERVER_PORT = 8888;
     private static final String TLS_VERSION = "TLSv1.2";
+    private static final int SERVER_COUNT = 1;
+    private static final String SERVER_HOST_NAME = "127.0.0.1";
+    private static final String TRUST_STORE_NAME = "servercert.p12";
+    private static final char[] TRUST_STORE_PWD = new char[] {'a', 'b', 'c', '1',
+            '2', '3'};
+    private static final String KEY_STORE_NAME = "servercert.p12";
+    private static final char[] KEY_STORE_PWD = new char[] {'a', 'b', 'c', '1',
+            '2', '3'};
+
+    //SSL config
 
     //
     public Server() {
@@ -66,7 +75,8 @@ public class Server extends Thread {
 
 
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException |
-                 KeyManagementException ignored) {
+                 KeyManagementException exception) {
+            System.out.println(exception.getMessage());
 
         }
         //
@@ -81,8 +91,10 @@ public class Server extends Thread {
                 //handle client connection
                 //add ConnectionHandler ch to connections ArrayList<>
 //                Socket clientSocket = serverSocket.accept();
+                System.out.println("Waiting on connection..");
                 Socket clientSSLSocket = (Socket) sslServerSocket.accept();
                 System.out.println("client connected: " + clientSSLSocket.getInetAddress().getHostAddress());
+                System.out.println("Adding to connection Handler");
                 ConnectionHandler ch = new ConnectionHandler(clientSSLSocket);
                 connections.add(ch);
                 ch.start();
@@ -94,11 +106,12 @@ public class Server extends Thread {
 
     @Override
     public void run() {
-//        try {
-//            startServer();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            startServer(SERVER_PORT, TLS_VERSION, TRUST_STORE_NAME,
+                    TRUST_STORE_PWD, KEY_STORE_NAME, KEY_STORE_PWD);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     class ConnectionHandler extends Thread {
