@@ -2,14 +2,11 @@
 //https://stackoverflow.com/questions/53323855/sslserversocket-and-certificate-setup
 package net.koonts;
 
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.*;
 import java.io.*;
 import java.net.Socket;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.*;
 
 public class Server extends Thread {
@@ -43,12 +40,24 @@ public class Server extends Thread {
         System.out.println("Setting up Keystore");
         try {
 
+            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            InputStream tstore = Server.class.getResourceAsStream("/" + trustStoreName);
+            trustStore.load(tstore, trustStorePassword);
+            if (tstore != null) {tstore.close();}
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(trustStore);
+
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            InputStream tstore = Server.class
-                    .getResourceAsStream("/" + trustStoreName);
+            InputStream kstore = Server.class.getResourceAsStream("/" + keyStoreName);
+            keyStore.load(kstore, keyStorePassword);
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            keyManagerFactory.init(keyStore, keyStorePassword);
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
 
 
-        } catch (KeyStoreException e) {
+        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException |
+                 KeyManagementException e) {
 
         }
         //
