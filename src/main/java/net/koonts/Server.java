@@ -1,34 +1,73 @@
 //SSL: https://stackoverflow.com/questions/25637039/detecting-ssl-connection-and-converting-socket-to-sslsocket
+//https://stackoverflow.com/questions/53323855/sslserversocket-and-certificate-setup
 package net.koonts;
 
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.util.*;
 
 public class Server extends Thread {
     int port;
     boolean running = false;
+    SSLSocketFactory sslSocketFactory;
+    SSLServerSocketFactory sslServerSocketFactory;
+    SSLSocket sslClient = null;
     ArrayList<ConnectionHandler> connections = new ArrayList<>();
+
+    //SSL config
+    String trustStoreName = "";
+    private static final String TLS_VERSION = "TLSv1.2";
+
+    //
     public Server() {
         this.port = 8888;
     }
     public Server(int port) {
         this.port = port;
     }
-    public void startServer() throws IOException {
+
+
+    public void startServer(int port, String tlsVersion, String trustStoreName, char[] trustStorePassword, String keyStoreName, char[] keyStorePassword) throws IOException {
         running = true;
+        if (port<=0) {throw new IllegalArgumentException("Invalid port");}
+
         System.out.println("Starting server");
-        ServerSocket serverSocket = new ServerSocket(port);
+
+        //setup keystore
+        System.out.println("Setting up Keystore");
+        try {
+
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            InputStream tstore = Server.class
+                    .getResourceAsStream("/" + trustStoreName);
+
+
+        } catch (KeyStoreException e) {
+
+        }
+        //
+        //
+
+
+        sslServerSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+        SSLServerSocket sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(port);
+
+
+
         while (running) {
             try {
                 //handle client connection
                 //add ConnectionHandler ch to connections ArrayList<>
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("client connected: " + clientSocket.getInetAddress().getHostAddress());
-                ConnectionHandler ch = new ConnectionHandler(clientSocket);
+//                Socket clientSocket = serverSocket.accept();
+                SSLSocket clientSSLSocket = (SSLSocket) sslServerSocket.accept();
+                System.out.println("client connected: " + clientSSLSocket.getInetAddress().getHostAddress());
+                ConnectionHandler ch = new ConnectionHandler(clientSSLSocket);
                 connections.add(ch);
                 ch.start();
             } catch (Exception e) {
@@ -59,10 +98,11 @@ public class Server extends Thread {
             this.hostAddress = client.getInetAddress().getHostAddress();
         }
         public SSLSocket moveToSSL(Socket client) {
-            SSLSocket sslClient = null;
+
             try {
-                SSLSocketFactory sslf = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                sslClient = (SSLSocket) sslf.createSocket(client, null, client.getPort(), false);
+                System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+                sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+                sslClient = (SSLSocket) sslSocketFactory.createSocket(client, null, client.getPort(), false);
                 
             } catch (IOException e) {
                 //TODO: catch
@@ -158,6 +198,7 @@ public class Server extends Thread {
                 connection.out.println(message);
             }
         }
+
     }
     public static void main(String[] args) {Runnable runnable = () -> {Server server = new Server();server.start();};runnable.run();}
 }
