@@ -4,6 +4,7 @@ package net.koonts;
 
 import javax.net.ssl.*;
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.*;
 import java.security.cert.CertificateException;
@@ -14,6 +15,7 @@ public class Server extends Thread {
     boolean running = false;
     SSLSocketFactory sslSocketFactory;
     SSLServerSocketFactory sslServerSocketFactory;
+    SSLServerSocket sslServerSocket;
     SSLSocket sslClient = null;
     ArrayList<ConnectionHandler> connections = new ArrayList<>();
 
@@ -55,17 +57,22 @@ public class Server extends Thread {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
 
+            sslServerSocketFactory = sslContext.getServerSocketFactory();
+            ServerSocket serverSocket = sslServerSocketFactory.createServerSocket(port);
+            sslServerSocket = (SSLServerSocket) serverSocket;
+            sslServerSocket.getNeedClientAuth();
+            sslServerSocket.setEnabledProtocols(new String[] {tlsVersion});
+
+
 
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException |
-                 KeyManagementException e) {
+                 KeyManagementException ignored) {
 
         }
         //
         //
 
 
-        sslServerSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-        SSLServerSocket sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(port);
 
 
 
@@ -74,7 +81,7 @@ public class Server extends Thread {
                 //handle client connection
                 //add ConnectionHandler ch to connections ArrayList<>
 //                Socket clientSocket = serverSocket.accept();
-                SSLSocket clientSSLSocket = (SSLSocket) sslServerSocket.accept();
+                Socket clientSSLSocket = (Socket) sslServerSocket.accept();
                 System.out.println("client connected: " + clientSSLSocket.getInetAddress().getHostAddress());
                 ConnectionHandler ch = new ConnectionHandler(clientSSLSocket);
                 connections.add(ch);
@@ -87,11 +94,11 @@ public class Server extends Thread {
 
     @Override
     public void run() {
-        try {
-            startServer();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            startServer();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     class ConnectionHandler extends Thread {
