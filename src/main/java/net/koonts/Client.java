@@ -1,22 +1,18 @@
 package net.koonts;
 
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import javax.net.SocketFactory;
+import javax.net.ssl.*;
+import java.io.*;
 import java.net.Socket;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Client extends Thread{
 
     boolean running = false;
-    Socket socket;
+    SSLSocket socket;
     PrintWriter out;
     BufferedReader in;
     String host;
@@ -37,7 +33,7 @@ public class Client extends Thread{
             '2', '3'};
 
     public Client() {
-        this.host = "10.150";
+        this.host = "127.1";
         this.port = 8888;
     }
     public Client(String host, int port) {
@@ -50,25 +46,36 @@ public class Client extends Thread{
     public void run() {
         running = true;
         try {
-            //create initial non ssl socket
-            socket = new Socket(host, port);
+            ///
+            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            InputStream tstore = Client.class.getResourceAsStream("/" + TRUST_STORE_NAME);
+            trustStore.load(tstore, TRUST_STORE_PWD);
+            if (tstore != null) {tstore.close();}
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(trustStore);
 
-            //check for ssl
-            if (true) {
-                sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                sslSocket = (SSLSocket) sslSocketFactory.createSocket(socket, null, false);
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            InputStream kstore = Client.class.getResourceAsStream("/" + KEY_STORE_NAME);
+            keyStore.load(kstore, KEY_STORE_PWD);
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            keyManagerFactory.init(keyStore, KEY_STORE_PWD);
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
 
+            SocketFactory factory = sslContext.getSocketFactory();
+
+
+            try(Socket connection = factory.createSocket(host, port)) {
+                ((SSLSocket) connection).setEnabledProtocols(new String[] {TLS_VERSION});
+                SSLParameters sslParameters = new SSLParameters();
+                sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
+                ((SSLSocket) connection).setSSLParameters(sslParameters);
+                socket = (SSLSocket) connection;
             }
 
-//            SSLSession session = sslSocket.getHandshakeSession();
-            SSLSession session = sslSocket.getSession();
-            //debug
-            System.out.println(session.getCipherSuite());
-            System.out.println(session.getProtocol());
-            System.out.println(Arrays.toString(session.getLocalCertificates()));
-
-            out = new PrintWriter(sslSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
+            ///
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             inputHandler = new InputHandler();
             inputHandler.start();
 
@@ -80,7 +87,8 @@ public class Client extends Thread{
                 System.out.println(messageFrom); //nickname prompt does not get preceding '>'
                 System.out.print(">");
             }
-        } catch (IOException e) {
+        } catch (IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException |
+                 UnrecoverableKeyException | KeyManagementException e) {
             throw new RuntimeException(e);
         }
     }

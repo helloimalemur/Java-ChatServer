@@ -14,6 +14,7 @@ public class Server extends Thread {
     int port;
     boolean running = false;
     SSLSocketFactory sslSocketFactory;
+    SSLContext sslContext;
     SSLServerSocketFactory sslServerSocketFactory;
     SSLServerSocket sslServerSocket;
     SSLSocket sslClient = null;
@@ -22,7 +23,7 @@ public class Server extends Thread {
     private static final int SERVER_PORT = 8888;
     private static final String TLS_VERSION = "TLSv1.2";
     private static final int SERVER_COUNT = 1;
-    private static final String SERVER_HOST_NAME = "127.0.0.1";
+    private static final String SERVER_HOST_NAME = "0.0.0.0";
     private static final String TRUST_STORE_NAME = "servercert.p12";
     private static final char[] TRUST_STORE_PWD = new char[] {'a', 'b', 'c', '1',
             '2', '3'};
@@ -50,20 +51,21 @@ public class Server extends Thread {
         //setup keystore
         System.out.println("Setting up Keystore");
         try {
-
+            //
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
             InputStream tstore = Server.class.getResourceAsStream("/" + trustStoreName);
             trustStore.load(tstore, trustStorePassword);
             if (tstore != null) {tstore.close();}
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(trustStore);
-
+            //
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             InputStream kstore = Server.class.getResourceAsStream("/" + keyStoreName);
             keyStore.load(kstore, keyStorePassword);
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(keyStore, keyStorePassword);
-            SSLContext sslContext = SSLContext.getInstance("TLS");
+            //
+            sslContext = SSLContext.getInstance("TLS");
             sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
 
             sslServerSocketFactory = sslContext.getServerSocketFactory();
@@ -92,7 +94,7 @@ public class Server extends Thread {
                 //add ConnectionHandler ch to connections ArrayList<>
 //                Socket clientSocket = serverSocket.accept();
                 System.out.println("Waiting on connection..");
-                Socket clientSSLSocket = (Socket) sslServerSocket.accept();
+                Socket clientSSLSocket = (SSLSocket) sslServerSocket.accept();
                 System.out.println("client connected: " + clientSSLSocket.getInetAddress().getHostAddress());
                 System.out.println("Adding to connection Handler");
                 ConnectionHandler ch = new ConnectionHandler(clientSSLSocket);
