@@ -1,5 +1,8 @@
 //SSL: https://stackoverflow.com/questions/25637039/detecting-ssl-connection-and-converting-socket-to-sslsocket
 //https://stackoverflow.com/questions/53323855/sslserversocket-and-certificate-setup
+
+//https://stackoverflow.com/questions/15405581/no-cipher-suites-in-common-while-establishing-a-secure-connection/15406581#15406581
+
 package net.koonts;
 
 import javax.net.ssl.*;
