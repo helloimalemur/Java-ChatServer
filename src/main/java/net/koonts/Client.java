@@ -13,6 +13,7 @@ public class Client extends Thread{
 
     boolean running = false;
     SSLSocket socket;
+    SSLSocket connection;
     PrintWriter out;
     BufferedReader in;
     String host;
@@ -53,29 +54,32 @@ public class Client extends Thread{
             if (tstore != null) {tstore.close();}
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(trustStore);
-
+            //
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             InputStream kstore = Client.class.getResourceAsStream("/" + KEY_STORE_NAME);
             keyStore.load(kstore, KEY_STORE_PWD);
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(keyStore, KEY_STORE_PWD);
+            //
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
-
+            //
             SocketFactory factory = sslContext.getSocketFactory();
 
 
-            try(Socket connection = factory.createSocket(host, port)) {
-                ((SSLSocket) connection).setEnabledProtocols(new String[] {TLS_VERSION});
+            try {
+                connection = (SSLSocket) factory.createSocket(host, port);
+                connection.setEnabledProtocols(new String[] {TLS_VERSION});
                 SSLParameters sslParameters = new SSLParameters();
                 sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
-                ((SSLSocket) connection).setSSLParameters(sslParameters);
-                socket = (SSLSocket) connection;
+                connection.setSSLParameters(sslParameters);
+            } catch (Exception ignored) {
+
             }
 
             ///
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(connection.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             inputHandler = new InputHandler();
             inputHandler.start();
 

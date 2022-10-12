@@ -14,9 +14,10 @@ public class Server extends Thread {
     int port;
     boolean running = false;
     SSLSocketFactory sslSocketFactory;
+    ServerSocket serverSocket;
     SSLContext sslContext;
     SSLServerSocketFactory sslServerSocketFactory;
-    SSLServerSocket sslServerSocket;
+    SSLSocket sslClientSocket;
     SSLSocket sslClient = null;
     ArrayList<ConnectionHandler> connections = new ArrayList<>();
 
@@ -69,10 +70,9 @@ public class Server extends Thread {
             sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
 
             sslServerSocketFactory = sslContext.getServerSocketFactory();
-            ServerSocket serverSocket = sslServerSocketFactory.createServerSocket(port);
-            sslServerSocket = (SSLServerSocket) serverSocket;
-            sslServerSocket.getNeedClientAuth();
-            sslServerSocket.setEnabledProtocols(new String[] {tlsVersion});
+            serverSocket = sslServerSocketFactory.createServerSocket(port);
+
+
 
 
 
@@ -94,10 +94,12 @@ public class Server extends Thread {
                 //add ConnectionHandler ch to connections ArrayList<>
 //                Socket clientSocket = serverSocket.accept();
                 System.out.println("Waiting on connection..");
-                Socket clientSSLSocket = (SSLSocket) sslServerSocket.accept();
-                System.out.println("client connected: " + clientSSLSocket.getInetAddress().getHostAddress());
+                sslClientSocket = (SSLSocket) serverSocket.accept();
+                sslClientSocket.getNeedClientAuth();
+                sslClientSocket.setEnabledProtocols(new String[] {tlsVersion});
+                System.out.println("client connected: " + sslClientSocket.getInetAddress().getHostAddress());
                 System.out.println("Adding to connection Handler");
-                ConnectionHandler ch = new ConnectionHandler(clientSSLSocket);
+                ConnectionHandler ch = new ConnectionHandler(sslClientSocket);
                 connections.add(ch);
                 ch.start();
             } catch (Exception e) {
