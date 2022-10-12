@@ -60,20 +60,27 @@ public class Server extends Thread {
             InputStream tstore = Server.class.getResourceAsStream("/" + trustStoreName);
             trustStore.load(tstore, trustStorePassword);
             if (tstore != null) {tstore.close();}
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+//            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+            System.out.println("trust manager factory");
+            System.out.println(trustManagerFactory.getAlgorithm());
             trustManagerFactory.init(trustStore);
             //
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             InputStream kstore = Server.class.getResourceAsStream("/" + keyStoreName);
             keyStore.load(kstore, keyStorePassword);
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            System.out.println(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(keyStore, keyStorePassword);
+            System.out.println(keyManagerFactory.getKeyManagers().length);
+            System.out.println(keyManagerFactory.getAlgorithm());
             //
             sslContext = SSLContext.getInstance("TLS");
             sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
-
+            System.out.println("Using: " + sslContext.getProtocol());
             sslServerSocketFactory = sslContext.getServerSocketFactory();
             serverSocket = sslServerSocketFactory.createServerSocket(port);
+
 
 
 

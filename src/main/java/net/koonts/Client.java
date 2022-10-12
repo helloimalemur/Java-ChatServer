@@ -1,7 +1,9 @@
+// https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html
 package net.koonts;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.*;
+import javax.net.ssl.X509TrustManager;
 import java.io.*;
 import java.net.Socket;
 import java.security.*;
@@ -52,27 +54,35 @@ public class Client extends Thread{
             InputStream tstore = Client.class.getResourceAsStream("/" + TRUST_STORE_NAME);
             trustStore.load(tstore, TRUST_STORE_PWD);
             if (tstore != null) {tstore.close();}
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+//            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
             trustManagerFactory.init(trustStore);
+            System.out.println(trustManagerFactory.getTrustManagers().length);
+            System.out.println(trustManagerFactory.getAlgorithm());
             //
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             InputStream kstore = Client.class.getResourceAsStream("/" + KEY_STORE_NAME);
             keyStore.load(kstore, KEY_STORE_PWD);
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+//            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
             keyManagerFactory.init(keyStore, KEY_STORE_PWD);
-            //
+//            //
             SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
+            sslContext.init(null, trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
             //
             SocketFactory factory = sslContext.getSocketFactory();
 
 
             try {
                 connection = (SSLSocket) factory.createSocket(host, port);
+                connection.startHandshake();
                 connection.setEnabledProtocols(new String[] {TLS_VERSION});
+                System.out.println(connection.getApplicationProtocol());
+                System.out.println(connection.getHandshakeApplicationProtocol());
                 SSLParameters sslParameters = new SSLParameters();
                 sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
                 connection.setSSLParameters(sslParameters);
+                connection.startHandshake();
             } catch (Exception ignored) {
 
             }
@@ -92,7 +102,7 @@ public class Client extends Thread{
                 System.out.print(">");
             }
         } catch (IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException |
-                 UnrecoverableKeyException | KeyManagementException e) {
+                 KeyManagementException | UnrecoverableKeyException e) {
             throw new RuntimeException(e);
         }
     }
