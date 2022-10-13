@@ -29,12 +29,10 @@ public class Client extends Thread{
     private static final String SERVER_HOST_NAME = "127.0.0.1";
 //    private static final String TRUST_STORE_NAME = "servercert.p12";
 //    private static final String KEY_STORE_NAME = "servercert.p12";
-    private static final String TRUST_STORE_NAME = "MyCertificate.crt";
-    private static final String KEY_STORE_NAME = "MyCertificate.crt";
-    private static final char[] TRUST_STORE_PWD = new char[] {'a', 'b', 'c', '1',
-            '2', '3'};
-    private static final char[] KEY_STORE_PWD = new char[] {'a', 'b', 'c', '1',
-            '2', '3'};
+    private static final String TRUST_STORE_NAME = "ed25519.cert";
+    private static final String KEY_STORE_NAME = "ed25519.cert";
+    private static final char[] TRUST_STORE_PWD = new char[] {'t','e', 's', 't', '1', '2', '3'};;
+    private static final char[] KEY_STORE_PWD = new char[] {'t','e', 's', 't', '1', '2', '3'};
 
     public Client() {
         this.host = "127.1";

@@ -5,6 +5,7 @@
 //https://docs.oracle.com/javase/10/security/sample-code-illustrating-secure-socket-connection-client-and-server.htm#JSSEC-GUID-B1060A74-9BAE-40F1-AB2B-C8D83812A4C7
 //https://www.amongbytes.com/post/201804-creating-certificates-for-ssl-testing/
 
+
 package net.koonts;
 
 import javax.net.ssl.*;
@@ -33,10 +34,10 @@ public class Server extends Thread {
     private static final String SERVER_HOST_NAME = "0.0.0.0";
 //    private static final String TRUST_STORE_NAME = "servercert.p12";
 //    private static final String KEY_STORE_NAME = "servercert.p12";
-    private static final String TRUST_STORE_NAME = "MyCertificate.crt";
-    private static final String KEY_STORE_NAME = "MyCertificate.crt";
-    private static final char[] TRUST_STORE_PWD = new char[] {'a', 'b', 'c', '1', '2', '3'};
-    private static final char[] KEY_STORE_PWD = new char[] {'a', 'b', 'c', '1', '2', '3'};
+    private static final String TRUST_STORE_NAME = "ed25519.cert";
+    private static final String KEY_STORE_NAME = "ed25519.cert";
+    private static final char[] TRUST_STORE_PWD = new char[] {'t','e', 's', 't', '1', '2', '3'};;
+    private static final char[] KEY_STORE_PWD = new char[] {'t','e', 's', 't', '1', '2', '3'};
 
     //SSL config
 
