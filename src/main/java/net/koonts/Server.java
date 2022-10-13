@@ -2,6 +2,8 @@
 //https://stackoverflow.com/questions/53323855/sslserversocket-and-certificate-setup
 
 //https://stackoverflow.com/questions/15405581/no-cipher-suites-in-common-while-establishing-a-secure-connection/15406581#15406581
+//https://docs.oracle.com/javase/10/security/sample-code-illustrating-secure-socket-connection-client-and-server.htm#JSSEC-GUID-B1060A74-9BAE-40F1-AB2B-C8D83812A4C7
+//https://www.amongbytes.com/post/201804-creating-certificates-for-ssl-testing/
 
 package net.koonts;
 
@@ -25,15 +27,16 @@ public class Server extends Thread {
     ArrayList<ConnectionHandler> connections = new ArrayList<>();
 
     private static final int SERVER_PORT = 8888;
-    private static final String TLS_VERSION = "TLSv1.2";
+    private static final String TLS_VERSION = "TLSv1.3";
+    private static final String CIPHER_SUITE = "TLS_AES_128_GCM_SHA256";
     private static final int SERVER_COUNT = 1;
     private static final String SERVER_HOST_NAME = "0.0.0.0";
-    private static final String TRUST_STORE_NAME = "servercert.p12";
-    private static final char[] TRUST_STORE_PWD = new char[] {'a', 'b', 'c', '1',
-            '2', '3'};
-    private static final String KEY_STORE_NAME = "servercert.p12";
-    private static final char[] KEY_STORE_PWD = new char[] {'a', 'b', 'c', '1',
-            '2', '3'};
+//    private static final String TRUST_STORE_NAME = "servercert.p12";
+//    private static final String KEY_STORE_NAME = "servercert.p12";
+    private static final String TRUST_STORE_NAME = "MyCertificate.crt";
+    private static final String KEY_STORE_NAME = "MyCertificate.crt";
+    private static final char[] TRUST_STORE_PWD = new char[] {'a', 'b', 'c', '1', '2', '3'};
+    private static final char[] KEY_STORE_PWD = new char[] {'a', 'b', 'c', '1', '2', '3'};
 
     //SSL config
 
@@ -69,7 +72,8 @@ public class Server extends Thread {
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(keyStore, keyStorePassword);
             //
-            sslContext = SSLContext.getInstance("TLS");
+            sslContext = SSLContext.getInstance(TLS_VERSION);
+//            sslContext = SSLContext.getInstance("TLS");
             sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
 
             sslServerSocketFactory = sslContext.getServerSocketFactory();
@@ -94,12 +98,14 @@ public class Server extends Thread {
         while (running) {
             try {
                 //handle client connection
+//                sslClientSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
                 //add ConnectionHandler ch to connections ArrayList<>
 //                Socket clientSocket = serverSocket.accept();
                 System.out.println("Waiting on connection..");
                 sslClientSocket = (SSLSocket) serverSocket.accept();
+                sslClientSocket.setEnabledProtocols(new String[] {TLS_VERSION});
+                sslClientSocket.setEnabledCipherSuites(new String[] {CIPHER_SUITE});
                 sslClientSocket.getNeedClientAuth();
-                sslClientSocket.setEnabledProtocols(new String[] {tlsVersion});
                 System.out.println("client connected: " + sslClientSocket.getInetAddress().getHostAddress());
                 System.out.println("Adding to connection Handler");
                 ConnectionHandler ch = new ConnectionHandler(sslClientSocket);
@@ -136,7 +142,7 @@ public class Server extends Thread {
         public SSLSocket moveToSSL(Socket client) {
 
             try {
-                System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+//                System.setProperty("https.protocols", "TLSv1.2");
                 sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
                 sslClient = (SSLSocket) sslSocketFactory.createSocket(client, null, client.getPort(), false);
                 

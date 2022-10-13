@@ -23,13 +23,16 @@ public class Client extends Thread{
     SSLSocket sslSocket;
 
     private static final int SERVER_PORT = 8888;
-    private static final String TLS_VERSION = "TLSv1.2";
+    private static final String TLS_VERSION = "TLSv1.3";
+    private static final String CIPHER_SUITE = "TLS_AES_128_GCM_SHA256";
     private static final int SERVER_COUNT = 1;
     private static final String SERVER_HOST_NAME = "127.0.0.1";
-    private static final String TRUST_STORE_NAME = "servercert.p12";
+//    private static final String TRUST_STORE_NAME = "servercert.p12";
+//    private static final String KEY_STORE_NAME = "servercert.p12";
+    private static final String TRUST_STORE_NAME = "MyCertificate.crt";
+    private static final String KEY_STORE_NAME = "MyCertificate.crt";
     private static final char[] TRUST_STORE_PWD = new char[] {'a', 'b', 'c', '1',
             '2', '3'};
-    private static final String KEY_STORE_NAME = "servercert.p12";
     private static final char[] KEY_STORE_PWD = new char[] {'a', 'b', 'c', '1',
             '2', '3'};
 
@@ -61,7 +64,8 @@ public class Client extends Thread{
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(keyStore, KEY_STORE_PWD);
             //
-            SSLContext sslContext = SSLContext.getInstance("TLS");
+            SSLContext sslContext = SSLContext.getInstance(TLS_VERSION);
+//            SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
             //
             SocketFactory factory = sslContext.getSocketFactory();
@@ -69,14 +73,16 @@ public class Client extends Thread{
 
             try {
                 connection = (SSLSocket) factory.createSocket(host, port);
+//                connection.setEnabledProtocols(new String[] {TLS_VERSION});
                 connection.setEnabledProtocols(new String[] {TLS_VERSION});
+                connection.setEnabledCipherSuites(new String[] {CIPHER_SUITE});
                 SSLParameters sslParameters = new SSLParameters();
-                sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
+//                sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
                 connection.setSSLParameters(sslParameters);
             } catch (Exception ignored) {
 
             }
-
+            connection.startHandshake();
             ///
             out = new PrintWriter(connection.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
